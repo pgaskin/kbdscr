@@ -1,0 +1,25 @@
+_kbdscr() {
+    case "${COMP_CWORD}" in
+    1)
+        COMPREPLY=( $(compgen -W "$(kbdscr |& sed -En '/^Layouts:/,/^[^ ]{1,4}/{//b;p}' | cut -d ' ' -f5)" -- "${COMP_WORDS[COMP_CWORD]}") )
+        ;;
+    *)
+        case "${COMP_WORDS[COMP_CWORD]}" in
+        /dev/input/event*\*)
+            COMPREPLY=( "$cur" )
+            ;;
+        ""|/dev/input/event*)
+            COMPREPLY=( $(compgen -W "$(compgen -f /dev/input/event)" -- "${COMP_WORDS[COMP_CWORD]}") )
+            if [[ ${#COMPREPLY[@]} -gt 1 && -n ${COMP_WORDS[COMP_CWORD]} ]]; then
+                COMPREPLY=( "${COMP_WORDS[COMP_CWORD]}*" "${COMPREPLY[@]}" )
+            fi
+            ;;
+        *)
+            compopt -o filenames
+            COMPREPLY=( $(compgen -f -- "${COMP_WORDS[COMP_CWORD]}") )
+            ;;
+        esac
+        ;;
+    esac
+}
+complete -F _kbdscr kbdscr

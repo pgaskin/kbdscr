@@ -1,0 +1,82 @@
+.TH "KBDSCR" 1
+
+.SH "NAME"
+kbdscr \- show evdev button events graphically
+
+.SH "SYNOPSIS"
+\fBkbdscr\fR layout input_event_evdev_path\&.\&.\&.
+
+.SH "DESCRIPTION"
+.PP
+This tool displays button events from evdev devices in a configurable on-screen
+layout. It is often useful for demos, screencasts, and debugging input devices\&.
+.PP
+This tool requires read access to the raw evdev devices to use this tool\&.
+Usually, this means you need to be root or a member of the \fIinput\fR group.
+
+.SH "OPTIONS"
+.PP
+\fBlayout\fR
+.RS 4
+The keyboard layout to be displayed\&.
+.RE
+.PP
+\fBinput_event_evdev_path\fR
+.RS 4
+The path to an evdev device to watch. These are usually found in
+/dev/input/event*\&. If there are any errors opening or reading from the device,
+they will be shown as warnings, but will not cause kbdscr to exit\&.
+.RE
+
+.SH "LAYOUTS"
+.PP
+The following layouts were defined at the time kbdscr was compiled:
+@layouts@
+
+.SH "DEFINING NEW LAYOUTS"
+.PP
+To define new layouts, add them to \fIkbd_layout.h\fR by defining a macro which
+calls \fIKBD_LAYOUT\fR. Then, add another entry to \fIKBD_LAYOUTS\fR with a
+unique identifier (without spaces, generally starting with k- for keyboards, m-
+for pointing devices, and km- for combinations), a human-readable description,
+and a reference to the macro with the keyboard\&.
+.PP
+Each layout consists of the a base size, which is used for the row height in
+pixels (keys spanning multiple rows are not supported), a number of units to
+divide that size into, and the number of units wide each row is\&. Afterwards,
+the keys and spacers are defined. Each key consists of the width, the text, and
+it's evdev keycode (see \fIlinux/input-event-codes\&.h\fR). A spacer is the same
+as a key, but without the text or keycode\&.
+.PP
+In the future, a textual format for specifying the layout at runtime may be
+created if necessary\&.
+
+.SH "EXAMPLES"
+.PP
+Show events from all input devices on a US keyboard.
+.if n \{\
+.RS 4
+.\}
+.nf
+kbdscr km-us-en /dev/input/event*
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.PP
+Show events from a specific input device.
+.if n \{\
+.RS 4
+.\}
+.nf
+kbdscr m-logi-m570 /dev/input/event9
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+
+.SH "AUTHOR"
+.PP
+kbdscr was written by Patrick Gaskin <patrick@pgaskin.net>\&.
