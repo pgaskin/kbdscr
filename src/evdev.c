@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <threads.h>
+#include <pthread.h>
 #include <unistd.h>
 
 #include <linux/input.h>
@@ -17,7 +17,7 @@
 
 struct evdev_watch_key_t {
     int        cancel_fd;
-    thrd_t     thread;
+    pthread_t  thread;
     void       (*keystate_cb)(void* data, int code, int state);
     void       (*error_cb)(void* data, const char* err);
     void       *data;
@@ -25,7 +25,7 @@ struct evdev_watch_key_t {
     const char **devs;
 };
 
-static int evdev_watch_key_thread(evdev_watch_key_t *opts);
+static void *evdev_watch_key_thread(evdev_watch_key_t *opts);
 
 evdev_watch_key_t *evdev_watch_key_start(void (*keystate_cb)(void* data, int code, int state), void (*error_cb)(void* data, const char* err), void *data, const char **devs, size_t n_dev, char **err) {
     evdev_watch_key_t *w = calloc(1, sizeof(evdev_watch_key_t));
@@ -41,7 +41,7 @@ evdev_watch_key_t *evdev_watch_key_start(void (*keystate_cb)(void* data, int cod
         return NULL;
     }
 
-    if (thrd_create(&w->thread, (int(*)(void*))(evdev_watch_key_thread), w) != thrd_success) {
+    if (pthread_create(&w->thread, NULL, (void*(*)(void*))(evdev_watch_key_thread), w) != 0) {
         if (err)
             asprintf(err, "could not start thread");
         return NULL;
@@ -55,12 +55,12 @@ evdev_watch_key_t *evdev_watch_key_start(void (*keystate_cb)(void* data, int cod
 void evdev_watch_key_stop(evdev_watch_key_t *w) {
     uint64_t i = 1;
     assert(write(w->cancel_fd, &i, sizeof(i)) == sizeof(i));
-    thrd_join(w->thread, NULL); // wait for the FDs to be closed
+    pthread_join(w->thread, NULL); // wait for the FDs to be closed
     close(w->cancel_fd);
     free(w);
 }
 
-static int evdev_watch_key_thread(evdev_watch_key_t *w) {
+static void *evdev_watch_key_thread(evdev_watch_key_t *w) {
     #define evdev_watch_key_err(format, ...) do {  \
         if (w->error_cb) {                         \
             char *msg;                             \
@@ -73,7 +73,7 @@ static int evdev_watch_key_thread(evdev_watch_key_t *w) {
     int efd;
     if ((efd = epoll_create1(0)) == -1) {
         evdev_watch_key_err("create epoll fd: %s", strerror(errno));
-        return 1;
+        return NULL;
     }
 
     if (epoll_ctl(efd, EPOLL_CTL_ADD, w->cancel_fd, &(struct epoll_event){
@@ -81,7 +81,7 @@ static int evdev_watch_key_thread(evdev_watch_key_t *w) {
         .events = EPOLLIN,
     })) {
         evdev_watch_key_err("add cancellation eventfd to epoll: %s", strerror(errno));
-        return 1;
+        return NULL;
     }
 
     int fds[w->n_dev];
@@ -150,7 +150,7 @@ cancel:
         if (fds[i] != -1)
             close(fds[i]);
     close(efd);
-    return 0;
+    return NULL;
 
     #undef evdev_watch_key_err
 }

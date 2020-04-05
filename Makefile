@@ -75,19 +75,19 @@ PTHREAD_CFLAGS := -pthread
 PTHREAD_LIBS   := -pthread
 
 define pkgconf =
- $(if $(filter-out undefined,$(origin $(1)_CFLAGS) $(origin $(1)_LIBS))
- ,$(info -- Using provided CFLAGS and LIBS for $(2))
- ,$(if $(shell $(PKGCONFIG) --exists $(2) >/dev/null 2>/dev/null && echo y)
-  ,$(info -- Found $(2) ($(shell $(PKGCONFIG) --modversion $(2))) with pkg-config)
-   $(eval $(1)_CFLAGS := $(shell $(PKGCONFIG) --silence-errors --cflags $(2)))
-   $(eval $(1)_LIBS   := $(shell $(PKGCONFIG) --silence-errors --libs $(2)))
-   $(if $(3)
-   ,$(if $(shell $(PKGCONFIG) $(3) $(2) >/dev/null 2>/dev/null && echo y)
-	,$(info .. Satisfies constraint $(3))
-    ,$(info .. Does not satisfy constraint $(3))
-	 $(error Dependencies do not satisfy constraints))
-   ,)
-  ,$(info -- Could not automatically detect $(2) with pkg-config. Please specify $(1)_CFLAGS and/or $(1)_LIBS manually)
+ $(if $(filter-out undefined,$(origin $(1)_CFLAGS) $(origin $(1)_LIBS)) \
+ ,$(info -- Using provided CFLAGS and LIBS for $(2)) \
+ ,$(if $(shell $(PKGCONFIG) --exists $(2) >/dev/null 2>/dev/null && echo y) \
+  ,$(info -- Found $(2) ($(shell $(PKGCONFIG) --modversion $(2))) with pkg-config) \
+   $(eval $(1)_CFLAGS := $(shell $(PKGCONFIG) --silence-errors --cflags $(2))) \
+   $(eval $(1)_LIBS   := $(shell $(PKGCONFIG) --silence-errors --libs $(2))) \
+   $(if $(3) \
+   ,$(if $(shell $(PKGCONFIG) $(3) $(2) >/dev/null 2>/dev/null && echo y) \
+    ,$(info .. Satisfies constraint $(3)) \
+    ,$(info .. Does not satisfy constraint $(3)) \
+     $(error Dependencies do not satisfy constraints)) \
+   ,) \
+  ,$(info -- Could not automatically detect $(2) with pkg-config. Please specify $(1)_CFLAGS and/or $(1)_LIBS manually) \
    $(error Missing dependencies)))
 endef
 
