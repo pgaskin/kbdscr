@@ -76,7 +76,7 @@ steps:
   settings:
     api_key: {from_secret: GITHUB_TOKEN}
     title: ${DRONE_TAG}
-    files: build/*
+    files: build/kbdscr*
     draft: true
   when: {ref: {include: ["refs/tags/*"]}}
 
