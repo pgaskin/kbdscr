@@ -10,12 +10,12 @@ SHELL         = /bin/bash -o pipefail
 # be portable, as kbdscr only supports Linux), and it's easy enough to move it
 # out if needed (all configure stuff, and only that, is done in this section)
 
-ifneq ($(if $(MAKECMDGOALS),$(if $(filter-out clean gitignore tarball,$(MAKECMDGOALS)),YES,NO),YES),YES)
+ifneq ($(if $(MAKECMDGOALS),$(if $(filter-out distclean clean gitignore tarball,$(MAKECMDGOALS)),YES,NO),YES),YES)
  $(info -- Skipping configuration)
 else
 CROSS_COMPILE =
 CC            = $(CROSS_COMPILE)gcc
-PKGCONFIG     = $(CROSS_COMPILE)pkg-config
+PKG_CONFIG    = $(CROSS_COMPILE)pkg-config
 GZIP          = gzip
 
 ifneq ($(CROSS_COMPILE),)
@@ -51,8 +51,8 @@ else
 endif
 
 ifeq ($(origin BASH_COMPLETIONSDIR),undefined)
- ifneq ($(shell $(PKGCONFIG) --exists bash-completion >/dev/null 2>/dev/null && echo y),)
-  BASH_COMPLETIONSDIR := $(shell $(PKGCONFIG) --silence-errors --variable=completionsdir bash-completion)
+ ifneq ($(shell $(PKG_CONFIG) --exists bash-completion >/dev/null 2>/dev/null && echo y),)
+  BASH_COMPLETIONSDIR := $(shell $(PKG_CONFIG) --silence-errors --variable=completionsdir bash-completion)
   $(info -- Found bash completions dir with pkg-config: $(BASH_COMPLETIONSDIR))
  else
   BASH_COMPLETIONSDIR := /etc/bash_completion.d
@@ -77,12 +77,12 @@ PTHREAD_LIBS   := -pthread
 define pkgconf =
  $(if $(filter-out undefined,$(origin $(1)_CFLAGS) $(origin $(1)_LIBS)) \
  ,$(info -- Using provided CFLAGS and LIBS for $(2)) \
- ,$(if $(shell $(PKGCONFIG) --exists $(2) >/dev/null 2>/dev/null && echo y) \
-  ,$(info -- Found $(2) ($(shell $(PKGCONFIG) --modversion $(2))) with pkg-config) \
-   $(eval $(1)_CFLAGS := $(shell $(PKGCONFIG) --silence-errors --cflags $(2))) \
-   $(eval $(1)_LIBS   := $(shell $(PKGCONFIG) --silence-errors --libs $(2))) \
+ ,$(if $(shell $(PKG_CONFIG) --exists $(2) >/dev/null 2>/dev/null && echo y) \
+  ,$(info -- Found $(2) ($(shell $(PKG_CONFIG) --modversion $(2))) with pkg-config) \
+   $(eval $(1)_CFLAGS := $(shell $(PKG_CONFIG) --silence-errors --cflags $(2))) \
+   $(eval $(1)_LIBS   := $(shell $(PKG_CONFIG) --silence-errors --libs $(2))) \
    $(if $(3) \
-   ,$(if $(shell $(PKGCONFIG) $(3) $(2) >/dev/null 2>/dev/null && echo y) \
+   ,$(if $(shell $(PKG_CONFIG) $(3) $(2) >/dev/null 2>/dev/null && echo y) \
     ,$(info .. Satisfies constraint $(3)) \
     ,$(info .. Does not satisfy constraint $(3)) \
      $(error Dependencies do not satisfy constraints)) \
@@ -136,6 +136,8 @@ ifneq ($(BASH_COMPLETIONSDIR),)
 	rm -f $(DESTDIR)$(BASH_COMPLETIONSDIR)/kbdscr
 endif
 
+distclean: clean
+
 clean:
 	rm -f $(GENERATED)
 
@@ -148,7 +150,7 @@ gitignore:
 tarball:
 	git archive --format=tar.gz --output=kbdscr-$(VERSION).tar.gz --prefix=kbdscr-$(VERSION)/ HEAD
 
-.PHONY: all install uninstall clean gitignore tarball
+.PHONY: all install uninstall distclean clean gitignore tarball
 
 # kbdscr
 

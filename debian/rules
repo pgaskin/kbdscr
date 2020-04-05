@@ -2,11 +2,18 @@
 
 #DH_VERBOSE = 1
 
+include /usr/share/dpkg/architecture.mk
+
+CONFIG := PREFIX=/usr
+ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+CONFIG += CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)-
+endif
+
 override_dh_auto_build:
-	dh_auto_build -- PREFIX=/usr
+	dh_auto_build -- $(CONFIG)
 
 override_dh_auto_install:
-	dh_auto_install -- PREFIX=/usr
+	dh_auto_install -- $(CONFIG)
 
 %:
 	dh $@

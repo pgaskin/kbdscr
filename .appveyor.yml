@@ -19,11 +19,11 @@ build_script:
     apt-get install -qqy --no-install-recommends crossbuild-essential-i386
     apt-get install -qqy --no-install-recommends crossbuild-essential-armhf
     mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=amd64
-    mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=armhf
     mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=i386
+    mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=armhf
     CONFIG_SITE=/etc/dpkg-cross/cross-config.amd64 DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=amd64
-    CONFIG_SITE=/etc/dpkg-cross/cross-config.armhf DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=armhf
     CONFIG_SITE=/etc/dpkg-cross/cross-config.i386  DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=i386
+    CONFIG_SITE=/etc/dpkg-cross/cross-config.armhf DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=armhf
     lintian --check ../kbdscr_*_amd64.deb
     lintian --check ../kbdscr_*_i386.deb
     lintian --check ../kbdscr_*_armhf.deb
