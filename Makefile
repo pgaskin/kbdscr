@@ -95,6 +95,21 @@ $(call pkgconf,XCB,xcb)
 $(call pkgconf,CAIRO,cairo,--atleast-version=1.6.4)
 endif
 
+# version info
+
+# note: change this to a normal version for tagged commits and set the
+# debian/changelog entry to stable, then go back to version-dev afterwards, and
+# put another entry in debian/changelog with UNRELEASED as the dist
+
+override VERSION := v0.0.0-dev
+ifneq ($(wildcard .git/.),)
+ override VERSION_GIT := $(shell git describe --tags --always)
+ ifneq ($(VERSION_GIT),)
+  override VERSION := $(VERSION_GIT)
+ endif
+endif
+override CFLAGS += -DKBDSCR_VERSION='"$(VERSION)"'
+
 # everything
 
 all: src/kbdscr res/kbdscr

@@ -8,6 +8,10 @@
 #include "kbd_layout.h"
 #include "win.h"
 
+#ifndef KBDSCR_VERSION
+#define KBDSCR_VERSION "unknown"
+#endif
+
 void handle_error(void* data __attribute__((unused)), const char *msg) {
     printf("Warning: %s\n", msg);
 }
@@ -15,6 +19,7 @@ void handle_error(void* data __attribute__((unused)), const char *msg) {
 int main(int argc, char **argv) {
     if (argc < 3 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
         fprintf(stderr, "Usage: %s layout input_event_evdev_path...\n", argv[0]);
+        fprintf(stderr, "Version: kbdscr %s\n", KBDSCR_VERSION);
         fprintf(stderr, "Layouts:\n");
         #define X(_, id, desc) \
             fprintf(stderr, "    %-16s %s\n", id, desc);
