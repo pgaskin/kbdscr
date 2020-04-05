@@ -1,3 +1,9 @@
+kbdscr (0.0.2) UNRELEASED; urgency=medium
+
+  * Unreleased.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Sun, 05 Apr 2020 17:33:23 -0400
+
 kbdscr (0.0.1) stable; urgency=medium
 
   * Initial release.
