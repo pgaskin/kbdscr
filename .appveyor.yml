@@ -1,0 +1,49 @@
+image: ubuntu
+version: "{build}"
+
+install:
+- docker pull debian:buster
+- docker pull ubuntu:bionic
+
+build_script:
+- git fetch --tags
+- make tarball
+- |
+  cat <<-'EOF' | docker run -v "$APPVEYOR_BUILD_FOLDER:/usr/src/kbdscr" --rm -i --workdir /usr/src/kbdscr debian:buster bash -sxeuo pipefail
+    dpkg --add-architecture amd64
+    dpkg --add-architecture i386
+    dpkg --add-architecture armhf
+    apt-get update -qqy
+    apt-get install -qqy --no-install-recommends build-essential debhelper devscripts dpkg-dev equivs git
+    apt-get install -qqy --no-install-recommends crossbuild-essential-amd64
+    apt-get install -qqy --no-install-recommends crossbuild-essential-i386
+    apt-get install -qqy --no-install-recommends crossbuild-essential-armhf
+    mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=amd64
+    mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=armhf
+    mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=i386
+    CONFIG_SITE=/etc/dpkg-cross/cross-config.amd64 DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=amd64
+    CONFIG_SITE=/etc/dpkg-cross/cross-config.armhf DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=armhf
+    CONFIG_SITE=/etc/dpkg-cross/cross-config.i386  DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=i386
+    rm -rf debian-buster
+    mkdir debian-buster
+    echo '*' > debian-buster/.gitignore
+    mv *.deb ../kbdscr{-,_}* debian-buster
+  EOF
+- ls -lah debian-buster
+- |
+  cat <<-'EOF' | docker run -v "$APPVEYOR_BUILD_FOLDER:/usr/src/kbdscr" --rm -i --workdir /usr/src/kbdscr ubuntu:bionic bash -sxeuo pipefail
+    apt-get update -qqy
+    apt-get install -t bionic-backports -qqy --no-install-recommends build-essential debhelper devscripts dpkg-dev equivs git
+    mk-build-deps --install --tool "apt-get -qqy --no-install-recommends"
+    dpkg-buildpackage -b -us -uc -tc
+    rm -rf ubuntu-bionic
+    mkdir ubuntu-bionic
+    echo '*' > ubuntu-bionic/.gitignore
+    mv *.deb ../kbdscr{-,_}* ubuntu-bionic
+  EOF
+- ls -lah ubuntu-bionic
+
+artifacts:
+- path: kbdscr-*.tar.gz
+- path: debian-buster/kbdscr*
+- path: ubuntu-bionic/kbdscr*
