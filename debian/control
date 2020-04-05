@@ -10,6 +10,7 @@ Vcs-Browser: https://github.com/geek1011/kbdscr
 
 Package: kbdscr
 Architecture: any
+Multi-Arch: foreign
 Depends: ${misc:Depends}, ${shlibs:Depends}, policykit-1
 Suggests: bash-completion
 Description: tool to show evdev button events graphically
