@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=kbdscr
+Exec=/bin/sh -c 'v=""; for dev in /dev/input/event*; do if ! test -r "$dev"; then v="pkexec"; break; fi; done; exec $v @bindir@/kbdscr km-us-en /dev/input/event*'
+Icon=input-keyboard
+Terminal=false
+GenericName=Keyboard Event Viewer
+Comment=Show evdev button events graphically.
+Categories=Utility;
+StartupNotify=false
+StartupWMClass=net.pgaskin.kbdscr
