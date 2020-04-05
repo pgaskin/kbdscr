@@ -1,0 +1,14 @@
+# make gitignore
+/src/kbdscr
+
+/src/*.gz
+/res/*.gz
+
+/src/win.o
+/src/evdev.o
+/src/main.o
+/src/kbd.o
+
+/res/kbdscr.policy
+/res/kbdscr.1
+/res/kbdscr.desktop
