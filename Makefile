@@ -101,9 +101,9 @@ endif
 # debian/changelog entry to stable, then go back to version-dev afterwards, and
 # put another entry in debian/changelog with UNRELEASED as the dist
 
-override VERSION := v0.0.0-dev
+override VERSION := 0.0.0-dev
 ifneq ($(wildcard .git/.),)
- override VERSION_GIT := $(shell git describe --tags --always)
+ override VERSION_GIT := $(shell git describe --tags --always | sed 's/^v//g')
  ifneq ($(VERSION_GIT),)
   override VERSION := $(VERSION_GIT)
  endif
