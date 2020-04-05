@@ -2,7 +2,7 @@ Source: kbdscr
 Section: utils
 Priority: optional
 Maintainer: Patrick Gaskin <patrick@pgaskin.net>
-Build-Depends: bash-completion, libcairo2-dev (>= 1.6.4), libxcb1-dev, pkg-config
+Build-Depends: bash-completion, gettext-base, libcairo2-dev (>= 1.6.4), libxcb1-dev, pkg-config
 Standards-Version: 4.4.1
 Homepage: https://github.com/geek1011/kbdscr
 Vcs-Git: https://github.com/geek1011/kbdscr.git

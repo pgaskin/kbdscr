@@ -81,11 +81,11 @@ AUTHOR
 
 ## Building
 
-At the minimum, kbdscr requires cairo (>= 1.6.4), libxcb, a compiler with C11 support, and a sufficiently modern libc (e.g. glibc 2.9+). To build properly, it also requires bash-completion. At runtime, it requires policykit for the desktop launcher to work if the user doesn't have the sufficient permissions to access the evdev devices.
+At the minimum, kbdscr requires cairo (>= 1.6.4), libxcb, a compiler with C11 support, and a sufficiently modern libc (e.g. glibc 2.9+). To build properly, it also requires bash-completion. During compilation, it also requires gettext for the envsubst command. At runtime, it requires policykit for the desktop launcher to work if the user doesn't have the sufficient permissions to access the evdev devices.
 
-Dependencies (Debian/Ubuntu): `bash-completion libcairo2-dev libxcb1-dev make gcc pkg-config policykit-1`, plus `debhelper devscripts dpkg-dev equivs` if building the package.
+Dependencies (Debian/Ubuntu): `bash-completion gettext-base libcairo2-dev libxcb1-dev make gcc pkg-config policykit-1`, plus `debhelper devscripts dpkg-dev equivs` if building the package.
 
-Dependencies (Fedora/RHEL/CentOS): `bash-completion cairo-devel libxcb-devel make gcc kernel-devel pkgconf polkit`.
+Dependencies (Fedora/RHEL/CentOS): `bash-completion cairo-devel gettext libxcb-devel make gcc kernel-devel pkgconf polkit`.
 
 To build and install:
 

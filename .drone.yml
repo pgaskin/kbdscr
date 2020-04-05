@@ -18,7 +18,7 @@ steps:
   image: gcc:9
   commands:
   - apt-get update -qqy
-  - apt-get install -qqy bash-completion git libcairo2-dev libxcb1-dev policykit-1
+  - apt-get install -qqy bash-completion gettext-base git libcairo2-dev libxcb1-dev policykit-1
   - make
   - make install
   - make clean
@@ -26,7 +26,7 @@ steps:
 - name: build-run-fedora
   image: fedora:32
   commands:
-  - dnf install --refresh -y bash-completion cairo-devel libxcb-devel make gcc git kernel-devel pkgconf polkit
+  - dnf install --refresh -y bash-completion cairo-devel gettext libxcb-devel make gcc git kernel-devel pkgconf polkit
   - make
   - make install
   - make clean
