@@ -1,0 +1,85 @@
+name: kbdscr
+kind: pipeline
+type: docker
+
+steps:
+- name: init
+  image: gcc:9
+  commands:
+  - git fetch --tags
+  - mkdir build
+  - echo '*' > build/.gitignore
+- name: tarball
+  image: gcc:9
+  commands:
+  - make tarball
+  - mv *.tar.gz build/
+- name: build-run-debian
+  image: gcc:9
+  commands:
+  - apt-get update -qqy
+  - apt-get install -qqy bash-completion git libcairo2-dev libxcb1-dev policykit-1
+  - make
+  - make install
+  - make clean
+  - kbdscr --help
+- name: build-run-fedora
+  image: fedora:32
+  commands:
+  - dnf install --refresh -y bash-completion cairo-devel libxcb-devel make gcc git kernel-devel pkgconf polkit
+  - make
+  - make install
+  - make clean
+  - kbdscr --help
+- name: x-deb-amd64
+  image: debian:buster
+  commands:
+  - dpkg --add-architecture amd64
+  - apt-get update -qqy
+  - apt-get install -qqy --no-install-recommends build-essential debhelper devscripts dpkg-dev equivs git lintian
+  - apt-get install -qqy --no-install-recommends crossbuild-essential-amd64
+  - mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=amd64
+  - CONFIG_SITE=/etc/dpkg-cross/cross-config.amd64 DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=amd64
+  - lintian --check ../kbdscr_0.0.1_amd64.deb
+  - dpkg-deb --info ../kbdscr_0.0.1_amd64.deb
+  - mv ../kbdscr_0.0.1_amd64.deb build/
+- name: x-deb-i386
+  image: debian:buster
+  commands:
+  - dpkg --add-architecture i386
+  - apt-get update -qqy
+  - apt-get install -qqy --no-install-recommends build-essential debhelper devscripts dpkg-dev equivs git lintian
+  - apt-get install -qqy --no-install-recommends crossbuild-essential-i386
+  - mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=i386
+  - CONFIG_SITE=/etc/dpkg-cross/cross-config.i386 DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=i386
+  - lintian --check ../kbdscr_0.0.1_i386.deb
+  - dpkg-deb --info ../kbdscr_0.0.1_i386.deb
+  - mv ../kbdscr_0.0.1_i386.deb build/
+- name: x-deb-armhf
+  image: debian:buster
+  commands:
+  - dpkg --add-architecture armhf
+  - apt-get update -qqy
+  - apt-get install -qqy --no-install-recommends build-essential debhelper devscripts dpkg-dev equivs git lintian
+  - apt-get install -qqy --no-install-recommends crossbuild-essential-armhf
+  - mk-build-deps --install --tool "apt-get -qqy --no-install-recommends" --host-arch=armhf
+  - CONFIG_SITE=/etc/dpkg-cross/cross-config.armhf DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=armhf
+  - lintian --check ../kbdscr_0.0.1_armhf.deb
+  - dpkg-deb --info ../kbdscr_0.0.1_armhf.deb
+  - mv ../kbdscr_0.0.1_armhf.deb build/
+- name: list
+  image: gcc:9
+  commands:
+  - ls -lah build
+- name: release
+  image: plugins/github-release
+  settings:
+    api_key: {from_secret: GITHUB_TOKEN}
+    title: ${DRONE_TAG}
+    files: build/*
+    draft: true
+  when: {ref: {include: ["refs/tags/*"]}}
+
+trigger:
+  event:
+    exclude: [promote]
