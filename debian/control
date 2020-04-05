@@ -14,3 +14,5 @@ Multi-Arch: foreign
 Depends: ${misc:Depends}, ${shlibs:Depends}, policykit-1
 Suggests: bash-completion
 Description: tool to show evdev button events graphically
+ This package provides a GUI for showing button events from evdev devices such
+ as mice and keyboards.

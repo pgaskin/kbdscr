@@ -14,7 +14,7 @@ build_script:
     dpkg --add-architecture i386
     dpkg --add-architecture armhf
     apt-get update -qqy
-    apt-get install -qqy --no-install-recommends build-essential debhelper devscripts dpkg-dev equivs git
+    apt-get install -qqy --no-install-recommends build-essential debhelper devscripts dpkg-dev equivs git lintian
     apt-get install -qqy --no-install-recommends crossbuild-essential-amd64
     apt-get install -qqy --no-install-recommends crossbuild-essential-i386
     apt-get install -qqy --no-install-recommends crossbuild-essential-armhf
@@ -24,6 +24,12 @@ build_script:
     CONFIG_SITE=/etc/dpkg-cross/cross-config.amd64 DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=amd64
     CONFIG_SITE=/etc/dpkg-cross/cross-config.armhf DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=armhf
     CONFIG_SITE=/etc/dpkg-cross/cross-config.i386  DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage --build-profiles=cross,nocheck -b -us -uc -tc --host-arch=i386
+    lintian --check ../kbdscr_*_amd64.deb
+    lintian --check ../kbdscr_*_i386.deb
+    lintian --check ../kbdscr_*_armhf.deb
+    dpkg-deb --info ../kbdscr_*_amd64.deb
+    dpkg-deb --info ../kbdscr_*_i386.deb
+    dpkg-deb --info ../kbdscr_*_armhf.deb
     rm -rf debian-buster
     mkdir debian-buster
     echo '*' > debian-buster/.gitignore
@@ -33,9 +39,11 @@ build_script:
 - |
   cat <<-'EOF' | docker run -v "$APPVEYOR_BUILD_FOLDER:/usr/src/kbdscr" --rm -i --workdir /usr/src/kbdscr ubuntu:bionic bash -sxeuo pipefail
     apt-get update -qqy
-    apt-get install -t bionic-backports -qqy --no-install-recommends build-essential debhelper devscripts dpkg-dev equivs git
+    apt-get install -t bionic-backports -qqy --no-install-recommends build-essential debhelper devscripts dpkg-dev equivs git lintian
     mk-build-deps --install --tool "apt-get -qqy --no-install-recommends"
     dpkg-buildpackage -b -us -uc -tc
+    lintian --check ../kbdscr_*_amd64.deb
+    dpkg-deb --info ../kbdscr_*_amd64.deb
     rm -rf ubuntu-bionic
     mkdir ubuntu-bionic
     echo '*' > ubuntu-bionic/.gitignore
