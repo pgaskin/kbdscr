@@ -10,7 +10,7 @@ SHELL         = /bin/bash -o pipefail
 # be portable, as kbdscr only supports Linux), and it's easy enough to move it
 # out if needed (all configure stuff, and only that, is done in this section)
 
-ifneq ($(if $(MAKECMDGOALS),$(if $(filter-out clean gitignore,$(MAKECMDGOALS)),YES,NO),YES),YES)
+ifneq ($(if $(MAKECMDGOALS),$(if $(filter-out clean gitignore tarball,$(MAKECMDGOALS)),YES,NO),YES),YES)
  $(info -- Skipping configuration)
 else
 CROSS_COMPILE =
@@ -145,7 +145,10 @@ gitignore:
 		sed 's/ /\n/g' | \
 		sed 's/^./\/&/' >> .gitignore
 
-.PHONY: all install uninstall clean gitignore
+tarball:
+	git archive --format=tar.gz --output=kbdscr-$(VERSION).tar.gz --prefix=kbdscr-$(VERSION)/ HEAD
+
+.PHONY: all install uninstall clean gitignore tarball
 
 # kbdscr
 
