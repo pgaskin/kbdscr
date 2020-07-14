@@ -1,10 +1,10 @@
 <h1 align="center">kbdscr</h1>
 
-[![](https://img.shields.io/github/v/release/geek1011/kbdscr)](https://github.com/geek1011/kbdscr/releases/latest) [![](https://img.shields.io/drone/build/geek1011/kbdscr/master)](https://cloud.drone.io/geek1011/kbdscr) [![](https://img.shields.io/appveyor/ci/pgaskin/kbdscr/master?label=appveyor%20build)](https://ci.appveyor.com/project/pgaskin/kbdscr/branch/master)
+[![](https://img.shields.io/github/v/release/pgaskin/kbdscr)](https://github.com/pgaskin/kbdscr/releases/latest) [![](https://img.shields.io/drone/build/pgaskin/kbdscr/master)](https://cloud.drone.io/pgaskin/kbdscr) [![](https://img.shields.io/appveyor/ci/pgaskin/kbdscr/master?label=appveyor%20build)](https://ci.appveyor.com/project/pgaskin/kbdscr/branch/master)
 
 kbdscr shows evdev button events graphically.
 
-Prebuilt amd64 Debian packages for the latest release are available from the [releases](https://github.com/geek1011/kbdscr/releases) page. There are additional packages available from the artifacts tab of the [AppVeyor builds](https://ci.appveyor.com/project/pgaskin/kbdscr/branch/master). Build instructions for other distros are below.
+Prebuilt amd64 Debian packages for the latest release are available from the [releases](https://github.com/pgaskin/kbdscr/releases) page. There are additional packages available from the artifacts tab of the [AppVeyor builds](https://ci.appveyor.com/project/pgaskin/kbdscr/branch/master). Build instructions for other distros are below.
 
 ## Screenshots
 ![](docs/screenshot_km-us-en.png)
