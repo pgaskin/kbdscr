@@ -102,7 +102,7 @@ static void *evdev_watch_key_thread(evdev_watch_key_t *w) {
     int n;
     struct epoll_event events[10]; // an arbitrary limit
     for (;;) {
-        if ((n = epoll_wait(efd, events, sizeof(events), -1)) == -1) {
+        if ((n = epoll_wait(efd, events, sizeof(events) / sizeof(events[0]), -1)) == -1) {
             evdev_watch_key_err("wait for epoll event: %s", strerror(errno));
             continue;
         }
